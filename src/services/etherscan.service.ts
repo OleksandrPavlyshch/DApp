@@ -1,3 +1,5 @@
+import type { EtherscanTransaction } from '@/types';
+
 const etherscanApiKey = process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY;
 const etherscanApiUrl = `https://api-sepolia.etherscan.io/api`;
 
@@ -10,7 +12,7 @@ export async function getBalance(address: string): Promise<string> {
   return data.result;
 }
 
-export async function getRecentTransactions(address: string): Promise<any[]> {
+export async function getRecentTransactions(address: string): Promise<EtherscanTransaction[]> {
   const response = await fetch(`${etherscanApiUrl}?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=desc&apikey=${etherscanApiKey}`);
   const data = await response.json();
   if (data.status !== '1') {

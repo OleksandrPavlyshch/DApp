@@ -1,12 +1,15 @@
 import { NextPage } from "next";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     getBalance,
-    getRecentTransactions,
-} from "@/services/etherscan.service";
+    subscribeToNewTransactions,
+    unsubscribeFromNewTransactions,
+} from "@/services/infura.service";
+import { getRecentTransactions } from "@/services/etherscan.service";
 import Layout from "../components/Layout";
 import { truncateAddress, formatDate, formatValue } from "@/utils/formatters";
-import { isValidEthAddress } from "@/utils/adress-validation";
+import { isValidEthAddress } from "@/utils/address-validation";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const AddressLookup: NextPage = () => {
     const [address, setAddress] = useState("");
@@ -20,9 +23,14 @@ const AddressLookup: NextPage = () => {
         event: React.ChangeEvent<HTMLInputElement>
     ) => {
         setAddress(event.target.value);
+        cleanState();
+    };
+
+    const cleanState = () => {
         setBalance(null);
         setTransactions([]);
         setError(null);
+        unsubscribeFromNewTransactions();
     };
 
     const fetchBalanceAndTransactions = async () => {
@@ -36,18 +44,38 @@ const AddressLookup: NextPage = () => {
             return;
         }
 
+        setLoadingBalance(true);
+        setLoadingTransactions(true);
+
         try {
             const balance = await getBalance(address);
-            setBalance(balance);
+            subscribeToNewTransactions(address, (tx) => {
+                const formattedTx = {
+                    ...tx,
+                    timeStamp: Date.now(),
+                };
+                setTransactions((prev) => [formattedTx, ...prev].slice(0, 10));
+            });
+            setBalance(balance.toString());
+            setLoadingBalance(false);
 
             const txs = await getRecentTransactions(address);
             setTransactions(txs);
+            setLoadingTransactions(false);
 
             setError(null);
         } catch (err) {
             setError("Failed to fetch balance or transactions");
+            setLoadingBalance(false);
+            setLoadingTransactions(false);
         }
     };
+
+    useEffect(() => {
+        return () => {
+            cleanState();
+        };
+    }, []);
 
     return (
         <Layout>
@@ -62,9 +90,14 @@ const AddressLookup: NextPage = () => {
                     />
                     <button
                         onClick={fetchBalanceAndTransactions}
-                        className="ml-4 p-4 bg-primary text-white rounded-lg shadow-lg hover:bg-secondary transition duration-300"
+                        disabled={loadingBalance || loadingTransactions}
+                        className="min-w-[150px] ml-4 p-4 bg-primary text-white rounded-lg shadow-lg hover:bg-secondary transition duration-300"
                     >
-                        Check Balance
+                        {loadingBalance || loadingTransactions ? (
+                            <LoadingSpinner />
+                        ) : (
+                            "Check Address"
+                        )}
                     </button>
                 </div>
                 {error && (
@@ -77,8 +110,12 @@ const AddressLookup: NextPage = () => {
                         <h2 className="text-primary text-2xl font-bold mb-2">
                             Current Balance
                         </h2>
-                        <p className="text-lightGray">
-                            {formatValue(balance)} ETH
+                        <p>
+                            <span className="text-white">
+                                {formatValue(balance)}
+                            </span>
+
+                            <span className="font-bold ml-2">ETH</span>
                         </p>
                     </div>
                 )}
@@ -119,7 +156,7 @@ const AddressLookup: NextPage = () => {
                                         <td className="py-2">
                                             {truncateAddress(tx.to)}
                                         </td>
-                                        <td className="py-2">
+                                        <td className="py-2 text-white">
                                             {formatValue(tx.value)} ETH
                                         </td>
                                         <td className="py-2">

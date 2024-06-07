@@ -5,7 +5,7 @@ export const truncateAddress = (address: string): string => {
 };
 
 export const formatValue = (value: string): string => {
-  return new Intl.NumberFormat(navigator.language).format(ethers.utils.formatEther(value));
+  return ethers.utils.formatEther(value);
 };
 
 export const formatDate = (timestamp: number): string => {
