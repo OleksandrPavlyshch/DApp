@@ -1,8 +1,9 @@
 import { NextPage, GetServerSideProps } from "next";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import Layout from "../components/Layout";
 import type { TokenPrices } from "@/types";
 import { fetchTokenPrices } from "@/services/priceService.service";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 interface AccountProps {
     initialTokenPrices: TokenPrices;
@@ -38,9 +39,9 @@ const Account: NextPage<AccountProps> = ({ initialTokenPrices, error }) => {
     return (
         <Layout>
             <div className="space-y-8 mt-10">
-                <button className="w-full md:w-2/3 lg:w-1/2 mx-auto p-4 bg-primary text-white rounded-lg shadow-lg block hover:bg-secondary transition duration-300">
-                    Connect Wallet
-                </button>
+                <div className="flex justify-center">
+                    <ConnectButton />
+                </div>
                 <div className="bg-accent p-6 rounded-lg shadow-lg">
                     <h2 className="text-primary text-2xl font-bold mb-4">
                         Send Transaction
