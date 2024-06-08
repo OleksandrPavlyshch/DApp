@@ -1,25 +1,39 @@
-import { NextPage } from "next";
+import { NextPage, GetServerSideProps } from "next";
 import { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import type { TokenPrices } from "@/types";
 import { fetchTokenPrices } from "@/services/priceService.service";
 
-const Account: NextPage = () => {
-    const [tokenPrices, setTokenPrices] = useState<TokenPrices | null>(null);
-    const [error, setError] = useState<string | null>(null);
+interface AccountProps {
+    initialTokenPrices: TokenPrices;
+    error: string | null;
+}
 
-    useEffect(() => {
-        const getTokenPrices = async () => {
-            try {
-                const prices = await fetchTokenPrices();
-                setTokenPrices(prices);
-            } catch (error) {
-                setError("Failed to fetch token prices");
-            }
+export const getServerSideProps: GetServerSideProps = async () => {
+    try {
+        const initialTokenPrices = await fetchTokenPrices(
+            "ethereum,tether,usd-coin,dai,chainlink,uniswap"
+        );
+        return {
+            props: {
+                initialTokenPrices,
+                error: null,
+            },
         };
+    } catch (error) {
+        return {
+            props: {
+                initialTokenPrices: null,
+                error: "Failed to fetch token prices",
+            },
+        };
+    }
+};
 
-        getTokenPrices();
-    }, []);
+const Account: NextPage<AccountProps> = ({ initialTokenPrices, error }) => {
+    const [tokenPrices, setTokenPrices] = useState<TokenPrices | null>(
+        initialTokenPrices
+    );
 
     return (
         <Layout>
