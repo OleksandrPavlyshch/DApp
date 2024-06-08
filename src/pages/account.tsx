@@ -4,6 +4,7 @@ import Layout from "../components/Layout";
 import type { TokenPrices } from "@/types";
 import { fetchTokenPrices } from "@/services/priceService.service";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useAccount } from "wagmi";
 
 interface AccountProps {
     initialTokenPrices: TokenPrices;
@@ -35,6 +36,7 @@ const Account: NextPage<AccountProps> = ({ initialTokenPrices, error }) => {
     const [tokenPrices, setTokenPrices] = useState<TokenPrices | null>(
         initialTokenPrices
     );
+    const { address, isConnected, chain } = useAccount();
 
     return (
         <Layout>
@@ -42,6 +44,29 @@ const Account: NextPage<AccountProps> = ({ initialTokenPrices, error }) => {
                 <div className="flex justify-center">
                     <ConnectButton />
                 </div>
+                {isConnected && (
+                    <div className="bg-background border  border-primary text-lightGray p-4 mt-4 rounded shadow-lg">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="font-bold text-primary">
+                                    Wallet Connected
+                                </p>
+                                <p className="text-sm">
+                                    Address:{" "}
+                                    <span className="text-white font-bold">
+                                        {address}
+                                    </span>
+                                </p>
+                                <p className="text-sm">
+                                    Network:{" "}
+                                    <span className="text-white font-bold">
+                                        {chain?.name}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
                 <div className="bg-accent p-6 rounded-lg shadow-lg">
                     <h2 className="text-primary text-2xl font-bold mb-4">
                         Send Transaction
