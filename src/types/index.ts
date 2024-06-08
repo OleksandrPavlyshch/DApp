@@ -27,3 +27,9 @@ export interface EtherscanTransaction {
   gasUsed: string;
   confirmations: string;
 }
+
+export interface PriceResponse {
+  [key: string]: {
+    usd: number;
+  };
+}

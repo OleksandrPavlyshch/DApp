@@ -1,5 +1,5 @@
 import { NextPage, GetServerSideProps } from "next";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Layout from "../components/Layout";
 import type { TokenPrices } from "@/types";
 import { fetchTokenPrices } from "@/services/priceService.service";
