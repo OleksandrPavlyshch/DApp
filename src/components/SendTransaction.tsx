@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { useSendTransaction, useAccount, useWaitForTransactionReceipt } from "wagmi";
+import { useSendTransaction, useAccount, useBalance, useWaitForTransactionReceipt } from "wagmi";
 import { ethers } from "ethers";
 import { parseEther } from "ethers/lib/utils";
 
 const SendTransaction = () => {
-  const { isConnected } = useAccount();
-  const { sendTransaction, data: txData, error: txError, isLoading: isSending } = useSendTransaction();
+  const { isConnected, address } = useAccount();
+  const { data: balance } = useBalance({ address });
+  const { sendTransaction, data: txData, error: txError, isPending } = useSendTransaction();
   const { isLoading: isWaiting, isSuccess } = useWaitForTransactionReceipt({
     hash: txData,
   });
@@ -21,10 +22,17 @@ const SendTransaction = () => {
       return;
     }
 
+    const amountInWei = parseEther(amount);
+
+    if (balance && ethers.BigNumber.from(balance.value).lt(amountInWei)) {
+      setErrorMessage("Insufficient funds");
+      return;
+    }
+
     try {
       sendTransaction({
-        to: recipient,
-        value: parseEther(amount),
+        to: recipient as `0x${string}`,
+        value: parseEther(amount) as unknown as bigint,
       });
       setErrorMessage(null);
     } catch (error) {
@@ -56,10 +64,10 @@ const SendTransaction = () => {
         />
         <button
           type="submit"
-          disabled={!isConnected || isSending}
+          disabled={!isConnected || isPending}
           className="w-full p-4 bg-orange text-white rounded-lg shadow-lg mt-4 hover:bg-secondary transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isSending ? "Sending..." : "Send"}
+          {isPending ? "Sending..." : "Send"}
         </button>
       </form>
       {txData && <p className="text-lightGray mt-2">Transaction Hash: {txData}</p>}
