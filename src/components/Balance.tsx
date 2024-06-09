@@ -1,7 +1,6 @@
 import React from "react";
 import { truncateAddress, formatDate, formatValue } from "@/utils/formatters";
 
-
 interface BalanceDisplayProps {
   balance: string | null;
 }

@@ -7,7 +7,6 @@ import { mainnet, sepolia } from "wagmi/chains";
 import { createClient } from "viem";
 import {
   RainbowKitProvider,
-  midnightTheme,
   connectorsForWallets,
   darkTheme,
 } from "@rainbow-me/rainbowkit";
