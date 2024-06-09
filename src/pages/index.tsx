@@ -1,15 +1,15 @@
 import { NextPage } from "next";
 import { useState, useEffect } from "react";
+import LoadingSpinner from "@/components/LoadingSpinner";
+import Layout from "@/components/Layout";
 import {
   getBalance,
   subscribeToNewTransactions,
   unsubscribeFromNewTransactions,
 } from "@/services/infura.service";
 import { getRecentTransactions } from "@/services/etherscan.service";
-import Layout from "../components/Layout";
 import { truncateAddress, formatDate, formatValue } from "@/utils/formatters";
 import { isValidEthAddress } from "@/utils/adress-validation";
-import LoadingSpinner from "@/components/LoadingSpinner";
 
 const AddressLookup: NextPage = () => {
   const [address, setAddress] = useState("");
@@ -26,14 +26,14 @@ const AddressLookup: NextPage = () => {
     cleanState();
   };
 
-  const cleanState = () => {
+  const cleanState = (): void => {
     setBalance(null);
     setTransactions([]);
     setError(null);
     unsubscribeFromNewTransactions();
   };
 
-  const fetchBalanceAndTransactions = async () => {
+  const fetchBalanceAndTransactions = async (): Promise<void> => {
     if (!address) {
       setError("Address field cannot be empty");
       return;
