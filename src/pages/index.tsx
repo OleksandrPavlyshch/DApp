@@ -16,8 +16,7 @@ const AddressLookup: NextPage = () => {
   const [balance, setBalance] = useState<string | null>(null);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [loadingBalance, setLoadingBalance] = useState(false);
-  const [loadingTransactions, setLoadingTransactions] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleAddressChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -33,7 +32,9 @@ const AddressLookup: NextPage = () => {
     unsubscribeFromNewTransactions();
   };
 
-  const fetchBalanceAndTransactions = async (): Promise<void> => {
+  const fetchBalanceAndTransactions = async (e: React.FormEvent): Promise<void> => {
+    e.preventDefault();
+
     if (!address) {
       setError("Address field cannot be empty");
       return;
@@ -44,17 +45,14 @@ const AddressLookup: NextPage = () => {
       return;
     }
 
-    setLoadingBalance(true);
-    setLoadingTransactions(true);
+    setLoading(true);
 
     try {
       const balance = await getBalance(address);
       setBalance(balance.toString());
-      setLoadingBalance(false);
 
       const txs = await getRecentTransactions(address);
       setTransactions(txs);
-      setLoadingTransactions(false);
 
       subscribeToNewTransactions(address, (tx) => {
         const formattedTx = {
@@ -67,9 +65,11 @@ const AddressLookup: NextPage = () => {
       setError(null);
     } catch (err) {
       setError("Failed to fetch balance or transactions");
-      setLoadingBalance(false);
-      setLoadingTransactions(false);
+
+    } finally {
+      setLoading(false);
     }
+
   };
 
   useEffect(() => {
@@ -81,7 +81,7 @@ const AddressLookup: NextPage = () => {
   return (
     <Layout>
       <div className="space-y-8">
-        <div className="flex justify-center mt-10">
+        <form onSubmit={fetchBalanceAndTransactions} className="flex justify-center mt-10">
           <input
             type="text"
             placeholder="Enter address"
@@ -90,17 +90,16 @@ const AddressLookup: NextPage = () => {
             className="w-full md:w-2/3 lg:w-1/2 p-4 rounded bg-accent text-lightGray border border-lightGray focus:outline-none focus:ring-2 focus:ring-primary"
           />
           <button
-            onClick={fetchBalanceAndTransactions}
-            disabled={loadingBalance || loadingTransactions}
+            disabled={loading}
             className="min-w-[150px] ml-4 p-4 bg-primary text-white rounded-lg shadow-lg hover:bg-secondary transition duration-300"
           >
-            {loadingBalance || loadingTransactions ? (
+            {loading ? (
               <LoadingSpinner />
             ) : (
               "Check Address"
             )}
           </button>
-        </div>
+        </form>
         {error && (
           <div className="bg-accent p-4 rounded text-red-500">
             {error}
