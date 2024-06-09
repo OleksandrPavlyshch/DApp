@@ -10,7 +10,7 @@ import {
   unsubscribeFromNewTransactions,
 } from "@/services/infura.service";
 import { getRecentTransactions } from "@/services/etherscan.service";
-import { isValidEthAddress } from "@/utils/adress-validation";
+import { isValidEthAddress } from "@/utils/address-validation";
 
 const AddressLookup: NextPage = () => {
   const [address, setAddress] = useState("");
