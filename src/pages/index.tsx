@@ -53,12 +53,12 @@ const AddressLookup: NextPage = () => {
       setBalance(balance.toString());
 
       const txs = await getRecentTransactions(address);
-      setTransactions(txs);
+      setTransactions((prev) => [...prev, ...txs].slice(0, 10));
 
       subscribeToNewTransactions(address, (tx) => {
         const formattedTx = {
           ...tx,
-          timeStamp: Date.now(),
+          timeStamp: Math.floor(Date.now() / 1000)
         };
         setTransactions((prev) => [formattedTx, ...prev].slice(0, 10));
       });
