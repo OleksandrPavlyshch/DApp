@@ -49,6 +49,13 @@ const AddressLookup: NextPage = () => {
 
     try {
       const balance = await getBalance(address);
+      setBalance(balance.toString());
+      setLoadingBalance(false);
+
+      const txs = await getRecentTransactions(address);
+      setTransactions(txs);
+      setLoadingTransactions(false);
+
       subscribeToNewTransactions(address, (tx) => {
         const formattedTx = {
           ...tx,
@@ -56,12 +63,6 @@ const AddressLookup: NextPage = () => {
         };
         setTransactions((prev) => [formattedTx, ...prev].slice(0, 10));
       });
-      setBalance(balance.toString());
-      setLoadingBalance(false);
-
-      const txs = await getRecentTransactions(address);
-      setTransactions(txs);
-      setLoadingTransactions(false);
 
       setError(null);
     } catch (err) {

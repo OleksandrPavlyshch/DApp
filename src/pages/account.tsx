@@ -17,7 +17,7 @@ interface AccountProps {
 export const getServerSideProps: GetServerSideProps = async () => {
     try {
         const initialTokenPrices = await fetchTokenPrices(
-            "ethereum,tether,usd-coin,dai,chainlink,uniswap"
+            ["ethereum", "tether", "usd-coin", "dai", "chainlink", "uniswap"]
         );
         return {
             props: {

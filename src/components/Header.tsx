@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
+
 const links = [
     { href: "/", label: "Address Lookup" },
     { href: "/account", label: "Account" },
@@ -18,11 +19,10 @@ const Header: React.FC = () => {
                         <Link
                             key={href}
                             href={href}
-                            className={`${
-                                router.pathname === href
+                            className={`${router.pathname === href
                                     ? "underline text-primary"
                                     : ""
-                            } text-lightGray hover:text-primary text-lg font-semibold transition duration-300`}
+                                } text-lightGray hover:text-primary text-lg font-semibold transition duration-300`}
                         >
                             {label}
                         </Link>

@@ -1,10 +1,5 @@
 export interface TokenPrices {
-  ethereum: { usd: number };
-  tether: { usd: number };
-  'usd-coin': { usd: number };
-  dai: { usd: number };
-  chainlink: { usd: number };
-  uniswap: { usd: number };
+  [key: string]: { [key:string]: number };
 }
 
 export interface EtherscanTransaction {

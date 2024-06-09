@@ -1,17 +1,19 @@
-# Project Name
+# Validation Cloud test task
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ## Description
 
-A password generator test.
+[Task description](https://s101.recruiting.eu.greenhouse.io/tests/e540109b0822df0fc1990851acdda0f8?utm_medium=email&utm_source=TakeHomeTest)
 
-## Features
+## Setup .env file
 
-- Generates strong and secure passwords
-- Customizable password length
-- Option to include numbers, and special characters
-- Copy password to clipboard functionality
+  Create a `.env` file in the root directory and add the following environment variables:
+
+  NEXT_PUBLIC_ETHERSCAN_API_KEY=your-etherscan-api-key
+
+  NEXT_PUBLIC_INFURA_API_KEY=your-infura-api-key
+
 
 ## Installation
 
