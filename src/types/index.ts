@@ -4,7 +4,7 @@ export interface TokenPrices {
 
 export interface EtherscanTransaction {
   blockNumber: string;
-  timeStamp: string;
+  timeStamp: number;
   hash: string;
   nonce: string;
   blockHash: string;
